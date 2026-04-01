@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar Assistant — MiccGreenTec</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Outfit', sans-serif;
+  background: #f7f7f5;
+  color: #0a0a0a;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 10% 20%, #ececea, transparent 50%),
+    radial-gradient(ellipse at 85% 10%, #e8e8e6, transparent 45%),
+    radial-gradient(ellipse at 65% 85%, #efefed, transparent 50%),
+    #f2f2f0;
+}
+
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  gap: 14px;
+}
+
+.header { text-align: center; z-index: 10; }
+
+.wordmark {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  color: #0a0a0a;
+  text-transform: uppercase;
+  margin-bottom: 9px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(10,10,10,0.06);
+  border: 1px solid rgba(10,10,10,0.14);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #0a0a0a;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.live {
+  width: 6px; height: 6px;
+  background: #0a0a0a;
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+.card {
+  width: 100%;
+  max-width: 640px;
+  height: 610px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(10,10,10,0.1);
+  box-shadow: 0 24px 64px rgba(10,10,10,0.12), inset 0 1px 0 rgba(255,255,255,0.95);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  z-index: 10;
+}
+
+.topbar {
+  flex-shrink: 0;
+  background: #0a0a0a;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.ava {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  border: 1.5px solid rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.ava svg { width: 22px; height: 22px; fill: #ffffff; }
+
+.binfo { flex: 1; }
+
+.bname {
+  font-size: 14px; font-weight: 700;
+  color: #f5f5f5;
+  display: flex; align-items: center; gap: 7px;
+}
+
+.atag {
+  font-size: 9px; font-weight: 700;
+  color: #f5f5f5;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.bstatus {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 3px;
+}
+
+.sdot {
+  width: 5px; height: 5px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.7;
+}
+
+.pow {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  text-align: right;
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.pow b {
+  display: block;
+  color: rgba(255,255,255,0.7);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.msgs {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 14px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msgs::-webkit-scrollbar { width: 3px; }
+.msgs::-webkit-scrollbar-thumb { background: rgba(10,10,10,0.12); border-radius: 3px; }
+
+.dlabel {
+  text-align: center;
+  font-size: 10px;
+  color: #888;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px;
+  flex-shrink: 0;
+}
+.dlabel::before, .dlabel::after {
+  content: ''; flex: 1; height: 1px;
+  background: rgba(10,10,10,0.08);
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
+  flex-shrink: 0;
+  animation: up 0.22s ease;
+}
+@keyframes up { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.msg.bot  { align-self: flex-start; }
+.msg.user { align-self: flex-end; }
+
+.bub {
+  padding: 11px 15px;
+  border-radius: 18px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.msg.bot .bub {
+  background: #ffffff;
+  color: #0a0a0a;
+  border: 1px solid rgba(10,10,10,0.09);
+  border-top-left-radius: 4px;
+  box-shadow: 0 2px 8px rgba(10,10,10,0.06);
+}
+
+.msg.user .bub {
+  background: #0a0a0a;
+  color: #f5f5f5;
+  border-top-right-radius: 4px;
+}
+
+.bub strong { color: #0a0a0a; font-weight: 600; }
+.msg.user .bub strong { color: #ffffff; }
+.bub em { color: #555; font-style: normal; font-weight: 500; }
+.msg.user .bub em { color: rgba(255,255,255,0.7); }
+
+.ts {
+  font-size: 10px;
+  color: #aaa;
+  margin-top: 4px;
+}
+.msg.user .ts { text-align: right; }
+
+.typing { flex-shrink: 0; padding: 0 14px 4px; display: none; }
+.typing.on { display: block; }
+.tdots {
+  display: inline-flex; gap: 4px; align-items: center;
+  background: #fff;
+  border: 1px solid rgba(10,10,10,0.09);
+  border-radius: 18px; border-top-left-radius: 4px;
+  padding: 11px 16px;
+  box-shadow: 0 2px 8px rgba(10,10,10,0.06);
+}
+.td {
+  width: 6px; height: 6px;
+  background: #0a0a0a;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: dot 1.2s infinite;
+}
+.td:nth-child(2){animation-delay:.18s;} .td:nth-child(3){animation-delay:.36s;}
+@keyframes dot { 0%,60%,100%{transform:translateY(0);opacity:0.3;} 30%{transform:translateY(-5px);opacity:0.9;} }
+
+.quick {
+  flex-shrink: 0;
+  padding: 7px 14px 5px;
+  display: flex; flex-wrap: wrap; gap: 6px;
+  border-top: 1px solid rgba(10,10,10,0.07);
+  background: rgba(247,247,245,0.7);
+}
+
+.qb {
+  background: transparent;
+  border: 1px solid rgba(10,10,10,0.18);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-size: 12px; font-weight: 500;
+  color: #0a0a0a;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: all 0.18s;
+  letter-spacing: 0.01em;
+}
+.qb:hover {
+  background: #0a0a0a;
+  color: #fff;
+  border-color: #0a0a0a;
+  transform: translateY(-1px);
+}
+
+.inputrow {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(10,10,10,0.07);
+  background: rgba(255,255,255,0.85);
+}
+
+.inp {
+  flex: 1;
+  background: rgba(247,247,245,0.9);
+  border: 1px solid rgba(10,10,10,0.12);
+  border-radius: 100px;
+  padding: 10px 18px;
+  font-size: 13.5px;
+  font-family: 'Outfit', sans-serif;
+  color: #0a0a0a;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.inp::placeholder { color: #aaa; }
+.inp:focus {
+  border-color: #0a0a0a;
+  box-shadow: 0 0 0 3px rgba(10,10,10,0.07);
+}
+
+.sbtn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: #0a0a0a;
+  border: none;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+.sbtn:hover { transform: scale(1.06); background: #222; }
+.sbtn svg { width: 16px; height: 16px; fill: #fff; }
+
+.foot {
+  font-size: 11px;
+  color: #999;
+  text-align: center;
+  z-index: 10;
+}
+.foot a { color: #0a0a0a; font-weight: 600; text-decoration: none; }
+.foot a:hover { text-decoration: underline; }
+
+.lead-form {
+  display: flex; flex-direction: column; gap: 7px;
+  margin-top: 8px;
+}
+.lead-form input {
+  background: #f7f7f5;
+  border: 1px solid rgba(10,10,10,0.14);
+  border-radius: 10px;
+  padding: 9px 13px;
+  font-size: 12.5px;
+  font-family: 'Outfit', sans-serif;
+  color: #0a0a0a;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.lead-form input:focus { border-color: #0a0a0a; }
+.lead-form input::placeholder { color: #bbb; }
+.lead-form button {
+  background: #0a0a0a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  transition: background 0.18s;
+  letter-spacing: 0.03em;
+}
+.lead-form button:hover { background: #222; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="header">
+    <div class="wordmark">Your Agency Name</div>
+    <div class="pill"><div class="live"></div>Live AI Demo — MiccGreenTec Solar Systems</div>
+  </div>
+
+  <div class="card">
+    <div class="topbar">
+      <div class="ava">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L13.5 8.5L20 7L15.5 12L20 17L13.5 15.5L12 22L10.5 15.5L4 17L8.5 12L4 7L10.5 8.5Z"/>
+        </svg>
+      </div>
+      <div class="binfo">
+        <div class="bname">Solar Assistant <span class="atag">AI</span></div>
+        <div class="bstatus"><div class="sdot"></div>Online — MiccGreenTec Solar Systems, Dubai</div>
+      </div>
+      <div class="pow">Powered by<b>Your Agency</b></div>
+    </div>
+
+    <div class="msgs" id="msgs">
+      <div class="dlabel">Today</div>
+      <div class="msg bot">
+        <div class="bub">
+          Welcome to <strong>MiccGreenTec Solar Systems</strong>.<br><br>
+          I am your dedicated solar consultant. Whether you are exploring solar for your home, business, or looking for a tailored energy solution across the <strong>UAE, Pakistan, or beyond</strong> — I am here to guide you.<br><br>
+          How may I assist you today?
+        </div>
+        <div class="ts" id="t0"></div>
+      </div>
+    </div>
+
+    <div class="typing" id="typing">
+      <div class="tdots">
+        <div class="td"></div><div class="td"></div><div class="td"></div>
+      </div>
+    </div>
+
+    <div class="quick" id="quick">
+      <button class="qb" onclick="sq('What solar systems do you offer?')">Our Systems</button>
+      <button class="qb" onclick="sq('What is the cost of a solar installation?')">Pricing</button>
+      <button class="qb" onclick="sq('Which areas do you serve?')">Coverage</button>
+      <button class="qb" onclick="sq('I would like to book a free consultation')">Book Consultation</button>
+    </div>
+
+    <div class="inputrow">
+      <input class="inp" id="inp" type="text"
+        placeholder="Ask about solar, pricing, or installation..."
+        autocomplete="off"
+        onkeydown="if(event.key==='Enter') send()"/>
+      <button class="sbtn" onclick="send()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="foot">
+    Demo by <a href="#">Your Agency</a> &nbsp;·&nbsp; <a href="#">Want this for your business? Let's talk</a>
+  </div>
+
+</div>
+
+<script>
+const GROQ_KEY = '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';
+
+const SYSTEM = `You are the AI Solar Consultant for MiccGreenTec Solar Systems, a premium solar energy company headquartered in Dubai, UAE, with operations across the UAE, Pakistan, and China. The company was founded by Waseem Ashraf Qureshi, an inventor and electronic engineer.
+
+COMPANY DETAILS:
+- Name: MiccGreenTec Solar Systems LLC
+- Address: Al Habtoor Complex, Warehouse 30, Al Qusais Industrial Area 3, Dubai, UAE
+- Phone: +971 52 945 5552
+- Email: info@miccgreentec.com
+- Facebook: facebook.com/MiccGreenTec
+- Operations: UAE, Pakistan, China
+
+SOLAR SYSTEMS OFFERED:
+Residential:
+- Basic Home Solar System — 3kW to 5kW — ideal for apartments and small homes — Starting from AED 18,000
+- Standard Home System — 6kW to 10kW — most popular for villas — Starting from AED 32,000
+- Premium Home System — 10kW to 20kW — large homes with high consumption — Starting from AED 58,000
+
+Commercial:
+- Small Business Package — 15kW to 30kW — shops, offices — Starting from AED 75,000
+- Mid-Scale Commercial — 30kW to 100kW — warehouses, factories — Starting from AED 180,000
+- Industrial Solutions — 100kW and above — custom pricing, contact team
+
+Pakistan Operations:
+- Residential systems from PKR 800,000
+- Commercial systems from PKR 3,000,000
+- Net metering available for WAPDA and K-Electric customers
+
+SERVICES:
+- Free site survey and energy audit
+- System design and engineering
+- Professional installation by certified technicians
+- DEWA/SEWA/FEWA approvals handled for UAE clients
+- Net metering application assistance
+- 25-year panel performance warranty
+- 5-year full system warranty
+- After-sales maintenance contracts
+
+TECHNOLOGY:
+- Monocrystalline and polycrystalline panels
+- Tier-1 manufacturers only (Jinko, LONGi, Canadian Solar)
+- Huawei, SMA, and Fronius inverters
+- On-grid, off-grid, and hybrid systems
+- Battery storage solutions available (lithium iron phosphate)
+
+CONSULTATION BOOKING:
+When a user wants to book a consultation — collect: full name, phone number, location (city/country), and type of property (residential or commercial). Confirm the details warmly at the end.
+
+TONE AND RULES:
+- Be professional, warm, and intellectually precise
+- Replies must be concise — 3 to 5 sentences maximum unless the question requires detail
+- Never use emojis
+- Never invent information not listed above
+- If asked about something outside your knowledge, direct them to call +971 52 945 5552 or email info@miccgreentec.com
+- Respond in the same language the user writes in (English, Arabic, or Urdu)
+- Highlight the value of solar investment — savings, environment, energy independence
+- When discussing Pakistan, be knowledgeable about load shedding and net metering context`;
+
+let history = [];
+let leadCollecting = false;
+
+function now() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+document.getElementById('t0').textContent = now();
+
+function scrollDown() {
+  const el = document.getElementById('msgs');
+  setTimeout(() => { el.scrollTop = el.scrollHeight; }, 50);
+}
+
+function addMsg(role, html) {
+  const el = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  const formatted = html
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+  d.innerHTML = `<div class="bub">${formatted}</div><div class="ts">${now()}</div>`;
+  el.appendChild(d);
+  scrollDown();
+}
+
+function addFormMsg() {
+  const el = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = `<div class="bub">
+    Please share your details and we will have a solar expert reach out within 24 hours.
+    <div class="lead-form">
+      <input id="lName" placeholder="Full name" />
+      <input id="lPhone" placeholder="Phone number (with country code)" />
+      <input id="lCity" placeholder="City and country" />
+      <input id="lType" placeholder="Property type — Residential or Commercial" />
+      <button onclick="submitLead()">Confirm Consultation Request</button>
+    </div>
+  </div><div class="ts">${now()}</div>`;
+  el.appendChild(d);
+  scrollDown();
+  leadCollecting = true;
+}
+
+function submitLead() {
+  const name  = document.getElementById('lName')?.value?.trim();
+  const phone = document.getElementById('lPhone')?.value?.trim();
+  const city  = document.getElementById('lCity')?.value?.trim();
+  const type  = document.getElementById('lType')?.value?.trim();
+  if (!name || !phone) { alert('Please enter at least your name and phone number.'); return; }
+  addMsg('user', `Name: ${name} | Phone: ${phone} | Location: ${city || 'Not specified'} | Property: ${type || 'Not specified'}`);
+  history.push({ role: 'user', content: `My consultation details — Name: ${name}, Phone: ${phone}, City: ${city}, Property type: ${type}` });
+  callAPI(`Consultation booking confirmed for ${name}.`);
+  leadCollecting = false;
+}
+
+function setTyping(on) {
+  document.getElementById('typing').className = on ? 'typing on' : 'typing';
+  if (on) scrollDown();
+}
+
+function hideQuick() {
+  const q = document.getElementById('quick');
+  if (q) q.style.display = 'none';
+}
+
+async function sq(txt) {
+  hideQuick();
+  document.getElementById('inp').value = txt;
+  await send();
+}
+
+async function send() {
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  inp.value = '';
+  hideQuick();
+  addMsg('user', txt);
+  history.push({ role: 'user', content: txt });
+  setTyping(true);
+
+  const lower = txt.toLowerCase();
+  const wantsBooking = lower.includes('book') || lower.includes('consult') || lower.includes('appointment') || lower.includes('schedule') || lower.includes('visit') || lower.includes('contact me') || lower.includes('call me');
+
+  if (wantsBooking && !leadCollecting) {
+    setTyping(false);
+    addFormMsg();
+    return;
+  }
+
+  await callAPI(null);
+}
+
+async function callAPI(overrideReply) {
+  if (overrideReply) {
+    setTyping(false);
+    const reply = overrideReply === 'skip' ? null : `Thank you. Your consultation has been confirmed. A MiccGreenTec solar specialist will contact you shortly. For immediate assistance, call **+971 52 945 5552** or email **info@miccgreentec.com**.`;
+    if (reply) {
+      addMsg('bot', reply);
+      history.push({ role: 'assistant', content: reply });
+    }
+    return;
+  }
+
+  try {
+    const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-8b-instant',
+        max_tokens: 400,
+        messages: [
+          { role: 'system', content: SYSTEM },
+          ...history
+        ]
+      })
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error?.message || 'API error');
+    const reply = data.choices?.[0]?.message?.content || 'I apologize — please contact us directly at +971 52 945 5552.';
+    history.push({ role: 'assistant', content: reply });
+    setTyping(false);
+    addMsg('bot', reply);
+
+    const rl = reply.toLowerCase();
+    if ((rl.includes('name') && rl.includes('phone')) || (rl.includes('details') && rl.includes('contact')) && !leadCollecting) {
+      setTimeout(addFormMsg, 300);
+    }
+  } catch(e) {
+    setTyping(false);
+    addMsg('bot', `We are experiencing a connection issue. Please reach us directly at **+971 52 945 5552** or **info@miccgreentec.com** — our team will be happy to assist.`);
+  }
+}
+</script>
+</body>
+</html>
